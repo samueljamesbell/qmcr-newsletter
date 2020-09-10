@@ -124,7 +124,7 @@ def bulletins_dataframe(path):
     return to_include
 
 
-def bulletin_to_template_entry(bulletin):
+def bulletin_to_template_entry(doc, bulletin):
     """Transform a bulletin item into a renderable template entry."""
     entry = {}
 
@@ -158,9 +158,14 @@ def filter_entries(entries, section):
     return [e for e in entries if e['Section'].strip() == section]
 
 
-def create_newsletter(template_path, college, cambridge, jobs):
-    """Open the template and populate with content."""
-    return DocxTemplate(template_path).render({
+def create_newsletter(template_path):
+    """Open the template."""
+    return DocxTemplate(template_path)
+
+
+def render_content(doc, college, cambridge, jobs):
+    """Populate the template with content."""
+    return doc.render({
         'college_entries': college,
         'cambridge_entries': cambridge,
         'job_entries': jobs
@@ -179,13 +184,15 @@ def save_newsletter(doc, output_dir):
 
 
 def open_word(path):
-    os.system('open {}'.format(output_path))
+    os.system('open {}'.format(path))
 
 
 if __name__ == '__main__':
+    newsletter = create_newsletter(args.template_path)
+
     # Read the bulletins CSV and add the newsletter entries
     bulletins = bulletins_dataframe(args.bulletin_csv)
-    entries = [bulletin_to_template_entry(b) for b in bulletins.to_dict(orient='records')]
+    entries = [bulletin_to_template_entry(newsletter, b) for b in bulletins.to_dict(orient='records')]
 
     # Separate the entries into the three newsletter sections
     college = filter_entries(entries, 'College')
@@ -220,6 +227,6 @@ if __name__ == '__main__':
         entry['number'] = i+1
 
     # Create, save and open the newsletter
-    newsletter = create_newsletter(template_path, college, cambridge, jobs)
-    path = save(newsletter, output_dir)
+    render_content(newsletter, college, cambridge, jobs)
+    path = save_newsletter(newsletter, args.output_dir)
     open_word(path)

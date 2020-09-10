@@ -16,7 +16,7 @@ You'll need to tweak the formatting (particularly the line breaks) in Word
 after the newsletter is generated, before copying and pasting into your
 favourite email client.
 
-## Requirements
+## Requirements
 
 * Python 3.7.x
 * A google `credentials.json` file, provided separately
@@ -26,7 +26,7 @@ favourite email client.
 pip install -r requirements.txt
 ```
 
-## Usage
+## Usage
 
 ```
 python generate-newsletter.py path-to-bulletin-csv
